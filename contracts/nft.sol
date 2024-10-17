@@ -51,12 +51,12 @@ contract nftProject is ERC721, VRFConsumerBaseV2 {
         owner = msg.sender;
         collectionName = _collectionName;
         maxSupply = _maxSupply;
-        mintCost = _mintCostInGwei * 1 gwei; //1gwei per mint un nft
+        mintCost = _mintCostInGwei * 1 gwei;
     }
 
     function createNFT(string memory magazineName, string memory authorName, string memory description) public payable {
-        require(nftCount < maxSupply, "Max supply reached");
-        require(msg.value >= mintCost, "Not enough ether to create NFT");
+        require(nftCount < maxSupply, "Max supply of NFT reached");
+        require(msg.value >= mintCost, "Not enough gwei to create NFT, you need at least one gwei to mint an nft");
 
         uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
@@ -90,7 +90,7 @@ contract nftProject is ERC721, VRFConsumerBaseV2 {
 
 
     function viewNFT(uint256 nftId) public view returns (string memory magazineName, string memory authorName, string memory description, string memory collection, address ownerAddress) {
-        require(_NftExist[nftId], "NFT does not exist");
+        require(_NftExist[nftId], "NFT dont exist");
         NFTMetadata storage metadata = _NftMetadata[nftId];
         return (metadata.magazineName, metadata.authorName, metadata.description, metadata.collectionName, ownerOf(nftId));
     }
@@ -103,7 +103,7 @@ contract nftProject is ERC721, VRFConsumerBaseV2 {
     }
 
     function transferFrom(address from, address to, uint256 nftId) public onlyOwner override {
-    require(_NftExist[nftId], "Nft does not exist");
+    require(_NftExist[nftId], "Nft dont exist");
     _transfer(from, to, nftId);
     emit NFTTransferredFrom(nftId, from, to);
 }
